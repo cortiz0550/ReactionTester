@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<title>Reaction Tester!</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style type="text/css">
+		
+		body {
+			padding: 0;
+			margin: 10px;
+			font-family: Arial;
+			background-color: grey;
+		}
+
+		.button {
+
+			font-size: 30px;
+			border-radius: 10%;
+			background-color: #DDDDDD;
+			border: none;
+			position: relative;
+			top: 335px;
+			left: 335px;
+			display: block;
+			text-decoration: none;
+			cursor: pointer;
+
+		}
+
+		#instructions {
+
+			display: block;
+
+		}
+
+		.timer {
+
+			font-weight: bold;
+			display: inline;
+			margin-right: 50px;
+
+		}
+
+		#boundary {
+
+			height: 750px;
+			width: 750px;
+			border: 1px solid black;
+			border-radius: 1%;
+			background-color: white;
+
+		}
+
+		#shape {
+
+			height: 200px;
+			width: 200px;
+			background-color: rebeccapurple;
+			border-radius: 5%;
+			display: none;
+			position: relative;
+			top: 0px;
+			left: 0px;
+
+		}
+
+	</style>
+</head>
+<body>
+
+	<h1>Test your Reactions!</h1>
+
+	<p id="instructions">Click on the shapes as quickly as you can!</p>
+
+	<p class="timer" id="timer">Your time: 0000 s</p>
+	<p class="timer" id="best">Best: 0000 s</p>
+	<p class="timer" id="average">Average: 0000s</p>
+
+	<div id="boundary">
+		
+		<div id="shape"></div>
+		<button class="button" id="startButton">Start</button>
+
+	</div>
+
+
+	<script type="text/javascript">
+
+		let startTime = new Date().getTime();   //What we will compare our ending time with.
+
+		let best = 20000;
+
+		// These will be used for our mean calculation later.
+		let numberOfClicks = 0;
+		let runningMean = 0;
+
+
+		//This removes the start button and starts the game.
+		document.getElementById("startButton").onclick = function() {
+
+			document.getElementById("startButton").style.display = "none";
+
+			appearAfterDelay();
+
+		}
+
+		function getRandomColor() {
+
+			let letters = "0123456789ABCDEF".split("");
+			let color = "#";
+
+			for(let i = 0; i < 6; i++) {
+
+				color += letters[Math.floor(Math.random() * 16)];
+
+			}
+
+			return color;
+
+		}
+
+
+		//This function makes the shape appear and resets the timer.
+		function makeShapeAppear() {
+
+			let top = Math.random() * 550;
+			let left = Math.random() * 550;
+			let width = (Math.random() * 175) + 25;
+
+
+			//This will change the square to a rectangle
+			if(Math.random() > .5){
+
+				document.getElementById("shape").style.borderRadius = "50%";
+
+			} else {
+
+				document.getElementById("shape").style.borderRadius = "5%";
+
+			}
+
+			//These next lines randomize where the shape will be in the div. 550 because the div is 750 and the shape is 200px. 
+			document.getElementById("shape").style.top = top + "px";
+			document.getElementById("shape").style.left = left + "px";
+			document.getElementById("shape").style.width = width + "px";
+			document.getElementById("shape").style.height = width + "px";
+			document.getElementById("shape").style.backgroundColor = "" + getRandomColor();
+
+			document.getElementById("shape").style.display = "block";
+
+			startTime = new Date().getTime();
+
+		}
+
+		function appearAfterDelay() {
+
+			setTimeout(makeShapeAppear, Math.random() * 3000);
+
+		}
+
+		//Here we make the shape disappear and display the time it took to click it.
+		document.getElementById("shape").onclick = function() {
+
+			numberOfClicks++;
+
+			let endTime = new Date().getTime();   //This is our ending time.
+
+			let timeTaken = (endTime - startTime) / 1000;
+
+			//Here we update the mean by calculating it from the previous one.
+			runningMean = runningMean + ((timeTaken - runningMean) / numberOfClicks);
+
+			document.getElementById("timer").innerHTML = "Your time: " + timeTaken + " s";
+
+			document.getElementById("shape").style.display = "none";
+
+
+			//This will display the fastest reaction time so far.
+			if(best > timeTaken) {
+
+				best = timeTaken;
+
+				document.getElementById("best").innerHTML = "Best: " + timeTaken + " s";
+
+			}
+
+			document.getElementById("average").innerHTML = "Average: " + runningMean + " s";
+
+			appearAfterDelay();
+
+		}
+
+	</script>
+
+</body>
+</html>
